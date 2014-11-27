@@ -26,7 +26,7 @@ method='bfgs'; % optimization method
 %% outer iteration
 % increase penalty a maximum number of times or
 % until optimum is found
-x=x0;
+x=x0(:);
 
 for it=1:maxiter
     % increase penalty parameter and set new objective function
@@ -35,12 +35,11 @@ for it=1:maxiter
     objfun= @(x) f(x) + penalty*norm(max(constraints(x),0))^2;
     xold=x;
     
-    [x,grad]=optim(objfun,xold,method);
-    
     % check if finished
     if norm(grad) < criterion
         break;
     end
+    [x,grad]=optim(objfun,xold,method);
 end
 
 fval=f(x);
@@ -53,7 +52,11 @@ end
 % wrapper for build in optimizers
 function [xnew,grad]=optim(f,xold,method)
 switch lower(method)
-    case {'bfgs', 'fminunc'}
+    case {'BFGS','bfgs'}
+        xnew=sqp(xold,f); % specific to GNU Octave
+        grad=gradient(f,xnew);
+        
+    case 'fminunc'
         [xnew,~,~,~,grad]=fminunc(f,xold);
     otherwise
         error('optpen:unknownMethoth','Optimization method unknown');
