@@ -35,11 +35,13 @@ for it=1:maxiter
     objfun= @(x) f(x) + penalty*norm(max(constraints(x),0))^2;
     xold=x;
     
+    % call inner optimization procedure
+    [x,grad]=optim(objfun,xold,method);
+
     % check if finished
     if norm(grad) < criterion
         break;
     end
-    [x,grad]=optim(objfun,xold,method);
 end
 
 fval=f(x);
