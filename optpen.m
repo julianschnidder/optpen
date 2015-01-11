@@ -69,12 +69,10 @@ end
 % gradient computation using central difference increment
 % This is used if no gradient is returned by inner optimization method.
 function grad = central_gradient(f,x,h)
-    grad = gradient(f,x);
-    % assert(h>0);
-    % I=eye(length(x));
+    assert(h>0);
+    I=eye(length(x));
     grad = NaN*x;
-    % for k=1:length(x)
-    %     grad(k)=(f(x+h*I(:,k)) - f(x-h*I(:,k)))/(2*h);
-    % end
-    % 
+    for k=1:length(x)
+        grad(k)=(f(x+h*I(:,k)) - f(x-h*I(:,k)))/(2*h);
+    end
 end
