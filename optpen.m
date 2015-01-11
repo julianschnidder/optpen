@@ -21,6 +21,7 @@ penalty=.1; %options.startPenalty;
 penaltyFactor=10; %options.penaltyFactor;
 criterion=1e-6; %options.criterion;
 method='bfgs'; % optimization method
+increment = 1e-6; % difference increment to approximate gardient
 
 
 %% outer iteration
@@ -56,11 +57,19 @@ function [xnew,grad]=optim(f,xold,method)
 switch lower(method)
     case {'BFGS','bfgs'}
         xnew=sqp(xold,f); % specific to GNU Octave
-        grad=gradient(f,xnew);
+        grad=central_gradient(f,xnew);
         
     case 'fminunc'
         [xnew,~,~,~,grad]=fminunc(f,xold);
     otherwise
         error('optpen:unknownMethoth','Optimization method unknown');
 end
+end
+
+% gradient computation using central difference increment
+% This is used if no gradient is returned by inner optimization method.
+function grad = central_gradient(f,x,h)
+    grad = gradient(f,x);
+    % assert(h>0);
+    % (f(x+h*ones(size(x))) - f(x-h*ones(size(x))))/(2*h)
 end
