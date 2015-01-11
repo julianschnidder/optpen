@@ -71,5 +71,10 @@ end
 function grad = central_gradient(f,x,h)
     grad = gradient(f,x);
     % assert(h>0);
-    % (f(x+h*ones(size(x))) - f(x-h*ones(size(x))))/(2*h)
+    % I=eye(length(x));
+    grad = NaN*x;
+    % for k=1:length(x)
+    %     grad(k)=(f(x+h*I(:,k)) - f(x-h*I(:,k)))/(2*h);
+    % end
+    % 
 end
