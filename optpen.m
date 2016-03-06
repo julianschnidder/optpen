@@ -70,9 +70,9 @@ end
 % This is used if no gradient is returned by inner optimization method.
 function grad = central_gradient(f,x,h)
     assert(h>0);
-    I=eye(length(x));
+    hI=eye(length(x));
     grad = NaN*x;
     for k=1:length(x)
-        grad(k)=(f(x+h*I(:,k)) - f(x-h*I(:,k)))/(2*h);
+        grad(k)=(f(x+hI(:,k)) - f(x-hI(:,k)))/(2*h);
     end
 end
