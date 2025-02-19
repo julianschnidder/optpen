@@ -1,8 +1,8 @@
 function [x, fval, fconstr]=optpen(f,x0,constraints)
 %[x, fval, fconstr]=optpen(f,x0,c)
-% 
+%
 % Perform penalty optimization method to solve
-% 
+%
 %   min f(x) s.t. c(x)<=0 (in the vector sense)
 %
 % INPUT:
@@ -32,12 +32,12 @@ x=x0(:);
 for it=1:maxiter
     % increase penalty parameter and set new objective function
     penalty=penaltyFactor*penalty;
-    
+
     objfun= @(x) f(x) + penalty*norm(max(constraints(x),0))^2;
     xold=x;
-    
+
     % call inner optimization procedure
-    [x,grad]=optim(objfun,xold,method);
+    [x,grad]=optim(objfun,xold,method,increment);
 
     % check if finished
     if norm(grad) < criterion
@@ -53,12 +53,12 @@ end
 %% auxiliary function
 
 % wrapper for build in optimizers
-function [xnew,grad]=optim(f,xold,method)
+function [xnew,grad]=optim(f,xold,method,increment)
 switch lower(method)
-    case {'BFGS','bfgs'}
+    case 'bfgs'
         xnew=sqp(xold,f); % specific to GNU Octave
-        grad=central_gradient(f,xnew);
-        
+        grad=central_gradient(f,xnew,increment);
+
     case 'fminunc'
         [xnew,~,~,~,grad]=fminunc(f,xold);
     otherwise
@@ -70,7 +70,7 @@ end
 % This is used if no gradient is returned by inner optimization method.
 function grad = central_gradient(f,x,h)
     assert(h>0);
-    hI=eye(length(x));
+    hI=h*eye(length(x));
     grad = NaN*x;
     for k=1:length(x)
         grad(k)=(f(x+hI(:,k)) - f(x-hI(:,k)))/(2*h);
